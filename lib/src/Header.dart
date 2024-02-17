@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../pages/about_page.dart';
+import '../pages/doc_window.dart';
 import '../pages/doctors_page.dart';
 import '../pages/home_page.dart';
 import '../pages/pharmacy_page.dart';
@@ -13,6 +14,11 @@ class Header extends StatefulWidget {
 }
 
 class _HeaderState extends State<Header> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  String selectedRole = 'Doctor';
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -95,16 +101,6 @@ class _HeaderState extends State<Header> {
                 },
               ),
               SizedBox(width: 40),
-              /* HeaderNav(
-                selected: false,
-                text: 'Appointments',
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => MyAppointments()));
-                },
-              ),*/
               HeaderNav(
                 selected: false,
                 text: 'About Us',
@@ -122,7 +118,7 @@ class _HeaderState extends State<Header> {
             children: [
               InkWell(
                 onTap: () {
-                  _showSignUpDialog(context);
+                  _showRoleSelectionDialog(context);
                 },
                 child: Text(
                   'Sign Up',
@@ -145,7 +141,7 @@ class _HeaderState extends State<Header> {
               ),
               InkWell(
                 onTap: () {
-                  _showLoginDialog(context);
+                  _showRoleSelectionDialog(context, isLogin: true);
                 },
                 child: Text(
                   'Log In',
@@ -162,81 +158,104 @@ class _HeaderState extends State<Header> {
     );
   }
 
-  void _showSignUpDialog(BuildContext context) {
+  void _showRoleSelectionDialog(BuildContext context, {bool isLogin = false}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Sign Up'),
+          title: Text(isLogin ? 'Log In' : 'Sign Up'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  if (isLogin) {
+                    _showLoginDialog(context);
+                  } else {
+                    _showSignUpDialog(context, userType: 'Patient');
+                  }
+                },
+                child: Text('Patient'),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  if (isLogin) {
+                    _showLoginDialog(context);
+                  } else {
+                    _showSignUpDialog(context, userType: 'Doctor');
+                  }
+                },
+                child: Text('Doctor'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showSignUpDialog(BuildContext context, {required String userType}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Sign Up as $userType'),
           content: SingleChildScrollView(
             child: Container(
               width: 350,
-              child: Stack(
-                alignment: Alignment.topCenter,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    height: 250,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('assets/images/login.png'),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
+                  Stack(
+                    alignment: Alignment.topCenter,
                     children: [
-                      SizedBox(height: 250),
-                      _buildTextFieldWithIcon(
-                        labelText: 'Name',
-                        icon: Icons.person,
-                      ),
-                      SizedBox(height: 10),
-                      _buildTextFieldWithIcon(
-                        labelText: 'Email',
-                        icon: Icons.email,
-                      ),
-                      SizedBox(height: 10),
-                      _buildTextFieldWithIcon(
-                        labelText: 'Password',
-                        icon: Icons.lock,
-                        obscureText: true,
-                      ),
-                      SizedBox(height: 10),
-                      _buildTextFieldWithIcon(
-                        labelText: 'Phone Number',
-                        icon: Icons.phone,
-                      ),
-                      SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Already Have an Account?',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.black,
-                              decoration: TextDecoration.underline,
-                            ),
+                      Container(
+                        height: 250,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/images/login.png'),
+                            fit: BoxFit.cover,
                           ),
-                          SizedBox(height: 3),
-                          GestureDetector(
-                            onTap: () {
-                              _showLoginDialog(context);
-                            },
-                            child: Text(
-                              ' Login',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.blueGrey,
-                                decoration: TextDecoration.underline,
-                              ),
-                            ),
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(height: 250),
+                          _buildTextFieldWithIcon(
+                            labelText: 'Name',
+                            icon: Icons.person,
+                          ),
+                          SizedBox(height: 10),
+                          _buildTextFieldWithIcon(
+                            labelText: 'Email',
+                            icon: Icons.email,
+                          ),
+                          SizedBox(height: 10),
+                          _buildTextFieldWithIcon(
+                            labelText: 'Password',
+                            icon: Icons.lock,
+                            obscureText: true,
+                          ),
+                          SizedBox(height: 10),
+                          _buildTextFieldWithIcon(
+                            labelText: 'Phone Number',
+                            icon: Icons.phone,
                           ),
                         ],
                       ),
                     ],
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Handle signup logic here
+                    },
+                    child: Text('Sign Up as $userType'),
                   ),
                 ],
               ),
@@ -248,13 +267,6 @@ class _HeaderState extends State<Header> {
                 Navigator.pop(context);
               },
               child: Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Handle the submit action
-                Navigator.pop(context);
-              },
-              child: Text('Submit'),
             ),
           ],
         );
@@ -297,42 +309,6 @@ class _HeaderState extends State<Header> {
                         icon: Icons.lock,
                         obscureText: true,
                       ),
-                      SizedBox(height: 5),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Text(
-                          'Forgot Password',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.blueGrey,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 3),
-                      Text(
-                        "Don't have an account?",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      SizedBox(height: 3),
-                      GestureDetector(
-                        onTap: () {
-                          _showSignUpDialog(context);
-                        },
-                        child: Text(
-                          'Sign Up',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.blueGrey,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ],
@@ -340,17 +316,22 @@ class _HeaderState extends State<Header> {
             ),
           ),
           actions: [
+            ElevatedButton(
+              onPressed: () {
+                if (selectedRole == 'Doctor') {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => DoctorWindow()));
+                } else {
+                  Navigator.pop(context);
+                }
+              },
+              child: Text('Log In'),
+            ),
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
               child: Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('Submit'),
             ),
           ],
         );
