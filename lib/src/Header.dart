@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:weeb/pages/appointments.dart';
 
 import '../pages/about_page.dart';
 import '../pages/doc_window.dart';
@@ -14,11 +15,8 @@ class Header extends StatefulWidget {
 }
 
 class _HeaderState extends State<Header> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
   String selectedRole = 'Doctor';
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -100,6 +98,17 @@ class _HeaderState extends State<Header> {
                       MaterialPageRoute(builder: (context) => Pharmacy()));
                 },
               ),
+              SizedBox(
+                width: 40,
+              ),
+              HeaderNav(
+                selected: false,
+                text: 'Appointments',
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Appointments()));
+                },
+              ),
               SizedBox(width: 40),
               HeaderNav(
                 selected: false,
@@ -173,7 +182,7 @@ class _HeaderState extends State<Header> {
                   if (isLogin) {
                     _showLoginDialog(context);
                   } else {
-                    _showSignUpDialog(context, userType: 'Patient');
+                    _showSignUpPatientDialog(context);
                   }
                 },
                 child: Text('Patient'),
@@ -185,7 +194,7 @@ class _HeaderState extends State<Header> {
                   if (isLogin) {
                     _showLoginDialog(context);
                   } else {
-                    _showSignUpDialog(context, userType: 'Doctor');
+                    _showSignUpDoctorDialog(context);
                   }
                 },
                 child: Text('Doctor'),
@@ -197,71 +206,187 @@ class _HeaderState extends State<Header> {
     );
   }
 
-  void _showSignUpDialog(BuildContext context, {required String userType}) {
+  void _showSignUpPatientDialog(BuildContext context) {
+    TextEditingController nameController = TextEditingController();
+    TextEditingController emailController = TextEditingController();
+    TextEditingController passwordController = TextEditingController();
+    TextEditingController phoneController = TextEditingController();
+    TextEditingController addressController = TextEditingController();
+    TextEditingController dobController = TextEditingController();
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Sign Up as $userType'),
+          title: Text('Sign Up as Patient'),
           content: SingleChildScrollView(
             child: Container(
               width: 350,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Stack(
-                    alignment: Alignment.topCenter,
-                    children: [
-                      Container(
-                        height: 250,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('assets/images/login.png'),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(height: 250),
-                          _buildTextFieldWithIcon(
-                            labelText: 'Name',
-                            icon: Icons.person,
-                          ),
-                          SizedBox(height: 10),
-                          _buildTextFieldWithIcon(
-                            labelText: 'Email',
-                            icon: Icons.email,
-                          ),
-                          SizedBox(height: 10),
-                          _buildTextFieldWithIcon(
-                            labelText: 'Password',
-                            icon: Icons.lock,
-                            obscureText: true,
-                          ),
-                          SizedBox(height: 10),
-                          _buildTextFieldWithIcon(
-                            labelText: 'Phone Number',
-                            icon: Icons.phone,
-                          ),
-                        ],
-                      ),
-                    ],
+                  // Widgets for patient sign-up
+                  _buildTextFieldWithIcon(
+                    labelText: 'Name',
+                    icon: Icons.person,
+                    controller: nameController,
                   ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Handle signup logic here
-                    },
-                    child: Text('Sign Up as $userType'),
+                  SizedBox(height: 10),
+                  _buildTextFieldWithIcon(
+                    labelText: 'Email',
+                    icon: Icons.email,
+                    controller: emailController,
+                  ),
+                  SizedBox(height: 10),
+                  _buildTextFieldWithIcon(
+                    labelText: 'Password',
+                    icon: Icons.lock,
+                    obscureText: true,
+                    controller: passwordController,
+                  ),
+                  SizedBox(height: 10),
+                  _buildTextFieldWithIcon(
+                    labelText: 'Contact Number',
+                    icon: Icons.phone,
+                    controller: phoneController,
+                  ),
+                  SizedBox(height: 10),
+                  _buildTextFieldWithIcon(
+                    labelText: 'Address',
+                    icon: Icons.location_on,
+                    controller: addressController,
+                  ),
+                  SizedBox(height: 10),
+                  _buildTextFieldWithIcon(
+                    labelText: 'Date of Birth',
+                    icon: Icons.calendar_today,
+                    controller: dobController,
                   ),
                 ],
               ),
             ),
           ),
           actions: [
+            ElevatedButton(
+              onPressed: () {
+                print('Name: ${nameController.text}');
+                print('Email: ${emailController.text}');
+                print('Password: ${passwordController.text}');
+                print('DOB: ${dobController.text}');
+                print('Address: ${addressController.text}');
+                print('Phone Number: ${phoneController.text}');
+
+                // Handle patient sign-up logic
+                Navigator.pop(context);
+              },
+              child: Text('Sign Up as Patient'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => DoctorWindow(
+                //               name: nameController.text,
+                //               specialization: '',
+                //               availability: '',
+                //             )));
+              },
+              child: Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showSignUpDoctorDialog(BuildContext context) {
+    TextEditingController nameController = TextEditingController();
+    TextEditingController emailController = TextEditingController();
+    TextEditingController passwordController = TextEditingController();
+    TextEditingController contactNoController = TextEditingController();
+    TextEditingController availabilityController = TextEditingController();
+    TextEditingController specializationController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Sign Up as Doctor'),
+          content: SingleChildScrollView(
+            child: Container(
+              width: 350,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Widgets for doctor sign-up
+                  _buildTextFieldWithIcon(
+                    labelText: 'Name',
+                    icon: Icons.person,
+                    controller: nameController,
+                  ),
+                  SizedBox(height: 10),
+                  _buildTextFieldWithIcon(
+                    labelText: 'Email',
+                    icon: Icons.email,
+                    controller: emailController,
+                  ),
+                  SizedBox(height: 10),
+                  _buildTextFieldWithIcon(
+                    labelText: 'Password',
+                    icon: Icons.lock,
+                    obscureText: true,
+                    controller: passwordController,
+                  ),
+                  SizedBox(height: 10),
+                  _buildTextFieldWithIcon(
+                    labelText: 'Contact Number',
+                    icon: Icons.phone,
+                    controller: contactNoController,
+                  ),
+                  SizedBox(height: 10),
+                  _buildTextFieldWithIcon(
+                    labelText: 'Specialization',
+                    icon: Icons.health_and_safety,
+                    controller: specializationController,
+                  ),
+                  SizedBox(height: 10),
+                  _buildTextFieldWithIcon(
+                    labelText: 'Availability',
+                    icon: Icons.calendar_today,
+                    controller: availabilityController,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                String name = nameController.text;
+                String specialization = specializationController.text;
+                String availability = availabilityController.text;
+                if (selectedRole == 'Doctor') {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => DoctorWindow(
+                              name: name,
+                              specialization: specialization,
+                              availability: availability)));
+                }
+
+                // print('Name:${nameController.text}');
+                // print('Email: ${emailController.text}');
+                // print('Password: ${passwordController.text}');
+                // print('Specialization:${specializationController.text}');
+                // print('Availability:$availabilityController.text');
+                // Handle patient sign-up logic
+                // Navigator.pop(context);
+              },
+              child: Text('Sign Up as Doctor'),
+            ),
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
@@ -275,6 +400,12 @@ class _HeaderState extends State<Header> {
   }
 
   void _showLoginDialog(BuildContext context) {
+    TextEditingController nameController = TextEditingController();
+    TextEditingController emailController = TextEditingController();
+    TextEditingController passwordController = TextEditingController();
+    TextEditingController availabilityController = TextEditingController();
+    TextEditingController specializationController = TextEditingController();
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -302,12 +433,14 @@ class _HeaderState extends State<Header> {
                       _buildTextFieldWithIcon(
                         labelText: 'Email',
                         icon: Icons.email,
+                        controller: emailController,
                       ),
                       SizedBox(height: 10),
                       _buildTextFieldWithIcon(
                         labelText: 'Password',
                         icon: Icons.lock,
                         obscureText: true,
+                        controller: passwordController,
                       ),
                     ],
                   ),
@@ -319,8 +452,14 @@ class _HeaderState extends State<Header> {
             ElevatedButton(
               onPressed: () {
                 if (selectedRole == 'Doctor') {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => DoctorWindow()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => DoctorWindow(
+                                name: nameController.text,
+                                specialization: specializationController.text,
+                                availability: availabilityController.text,
+                              )));
                 } else {
                   Navigator.pop(context);
                 }
@@ -338,40 +477,48 @@ class _HeaderState extends State<Header> {
       },
     );
   }
+}
 
-  Widget _buildTextFieldWithIcon({
-    required String labelText,
-    required IconData icon,
-    bool obscureText = false,
-  }) {
-    return Container(
-      height: 50,
-      width: 350,
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey),
-        color: Colors.white,
-      ),
-      child: TextField(
-        obscureText: obscureText,
-        style: TextStyle(fontSize: 12),
-        decoration: InputDecoration(
-          labelText: labelText,
-          prefixIcon: Icon(
-            icon,
-            color: Colors.blueGrey,
-          ),
-          border: InputBorder.none,
+Widget _buildTextFieldWithIcon({
+  required String labelText,
+  required IconData icon,
+  required TextEditingController controller, // Add this parameter
+
+  bool obscureText = false,
+}) {
+  return Container(
+    height: 50,
+    width: 350,
+    padding: EdgeInsets.symmetric(horizontal: 16),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: Colors.grey),
+      color: Colors.white,
+    ),
+    child: TextField(
+      controller: controller, // Set the controller
+
+      obscureText: obscureText,
+
+      style: TextStyle(fontSize: 12),
+
+      decoration: InputDecoration(
+        labelText: labelText,
+        prefixIcon: Icon(
+          icon,
+          color: Colors.blueGrey,
         ),
+        border: InputBorder.none,
       ),
-    );
-  }
+    ),
+  );
 }
 
 class HeaderNav extends StatefulWidget {
   final String text;
+
   final bool selected;
+
   final VoidCallback? onTap;
 
   HeaderNav({
